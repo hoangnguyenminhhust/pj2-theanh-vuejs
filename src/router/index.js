@@ -13,22 +13,22 @@ export default new Router({
         {
             path: '/',
             name: 'room',
-            component: () => import('../views/phong/phong.vue'),
+            component: () => import('../views/room/room.vue'),
         },
         {
-            path: '/manager',
-            name: 'manager',
-            component: () => import('../views/manager/manager.vue'),
+            path: '/student',
+            name: 'student',
+            component: () => import('../views/student/student.vue'),
         },
         {
-            path: '/yeucau',
-            name: 'yeucau',
-            component: () => import('../views/yeucau/yeucau.vue'),
+            path: '/request',
+            name: 'request',
+            component: () => import('../views/request/request.vue'),
         },
         {
-            path: '/chiphi',
-            name: 'chiphi',
-            component: () => import('../views/chiphi/chiphi.vue'),
+            path: '/fee',
+            name: 'fee',
+            component: () => import('../views/fee/fee.vue'),
         },
         
 
