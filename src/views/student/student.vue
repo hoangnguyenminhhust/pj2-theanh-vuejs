@@ -1,103 +1,252 @@
 <template>
   <div>
-    <page-title :heading=heading :subheading=subheading :icon=icon></page-title>
-    <tabs
-      :tabs="tabs"
-      :currentTab="currentTab"
-      :wrapper-class="'body-tabs shadow-tabs'"
-      :tab-class="'tab-item'"
-      :tab-active-class="'tab-item-active'"
-      :line-class="'tab-item-line'"
-      @onClick="handleClick"
-    />
-    <div class="content">
-      <div v-if="currentTab === 'tab1'">
-        <b-card class="main-card mb-3">
-          <quill-editor v-model="content"
-                        ref="myQuillEditor"
-                        :options="editorOption">
-          </quill-editor>
-        </b-card>
-      </div>
-      <div v-if="currentTab === 'tab2'">
-        <b-card class="main-card mb-3">
-          <ckeditor :editor="editor2" v-model="editorData" :config="editorConfig"></ckeditor>
-        </b-card>
-      </div>
-    </div>
+    <v-toolbar flat color="white">
+      <v-toolbar-title>Quản lý sinh viên</v-toolbar-title>
+      <v-divider class="mx-2"></v-divider>
+      <v-spacer></v-spacer>
+      <v-dialog persistent v-model="dialogEdit" max-width="500px">
+        <v-card>
+          <v-card-title>
+            <span class="headline">Edit Item</span>
+          </v-card-title>
+
+          <v-card-text>
+            <v-container grid-list-md>
+              <v-layout wrap>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field v-model="editedItem.name" label="Tên"></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field v-model="editedItem.age" label="Tuổi"></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field v-model="editedItem.gender" label="Giới tính"></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field v-model="editedItem.course" label="Khoá học"></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field v-model="editedItem.room" label="Phòng"></v-text-field>
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn small color="light-blue darken-1" @click="save">Lưu</v-btn>
+            <v-btn small color="red darken-1" @click="close">Huỷ Bỏ</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog persistent v-model="dialogView" max-width="500px">
+        <v-card>
+          <v-card-title>
+            <span class="headline">View Item</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container grid-list-md>
+              <v-layout wrap>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field v-model="editedItem.name" label="Tên"></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field v-model="editedItem.age" label="Tuổi"></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field v-model="editedItem.gender" label="Giới tính"></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field v-model="editedItem.course" label="Khoá học"></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                  <v-text-field v-model="editedItem.room" label="Phòng"></v-text-field>
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn small color="red darken-1" @click="close">Cancel</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog persistent v-model="dialogDelete" max-width="290">
+        <v-card>
+          <v-card-title class="headline">Bạn có muốn xoá sinh viên này?</v-card-title>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="light-blue darken-1" text @click="deleteItem(item)">Xác Nhận</v-btn>
+            <v-btn color="red darken-1" text @click="dialogDelete = false">Huỷ bỏ</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-toolbar>
+    <v-data-table :headers="headers" :items="desserts" class="elevation-10">
+      <template v-slot:items="props">
+        <td>{{ props.item.name }}</td>
+        <td class="text-sm-left">{{ props.item.age }}</td>
+        <td class="text-sm-left">{{ props.item.gender }}</td>
+        <td class="text-sm-left">{{ props.item.course }}</td>
+        <td class="text-sm-left">{{ props.item.room }}</td>
+        <td class="text-center layout px-0 center">
+          <div class="my-2">
+            <v-btn small color="amber lighten-1" @click="editItem(props.item)">Edit</v-btn>
+          </div>
+          <div class="my-2">
+            <v-btn small color="red darken-1" @click="alertDelete()">Delete</v-btn>
+          </div>
+          <div class="my-2">
+            <v-btn small color="blue-grey lighten-4" @click="viewItem(props.item)">Views</v-btn>
+          </div>
+        </td>
+      </template>
+      <template v-slot:no-data>
+        <v-btn small color="amber lighten-1" @click="initialize">Tải lại danh sách</v-btn>
+      </template>
+    </v-data-table>
   </div>
 </template>
 
 <script>
-  import PageTitle from "../../../Layout/Components/PageTitle.vue";
-  import Tabs from 'vue-tabs-with-active-line';
-  import { quillEditor } from 'vue-quill-editor'
-  import CKEditor from '@ckeditor/ckeditor5-vue';
-  import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-
-  const TABS = [{
-    title: 'Quill Editor',
-    value: 'tab1',
-  }, {
-    title: 'ckEditor',
-    value: 'tab2',
-  }];
-
-  export default {
-    components: {
-      PageTitle,
-      Tabs,
-      quillEditor,
-      ckeditor: CKEditor.component
-    },
-    data: () => ({
-      heading: 'WYSIWYG Editors',
-      subheading: 'Need to add formatting to your forms? Use these Vue2 widgets.',
-      icon: 'pe-7s-like icon-gradient bg-love-kiss',
-
-      tabs: TABS,
-      currentTab: 'tab1',
-
-      editor2: ClassicEditor,
-      editorData: '<p>Content of the editor.</p>',
-      editorConfig: {
-        // The configuration of the editor.
+export default {
+  data: () => ({
+    dialogDelete: false,
+    dialogView: false,
+    dialogEdit: false,
+    headers: [
+      {
+        text: "Tên",
+        width: "20%",
+        sortable: false,
+        value: "name"
       },
+      { text: "Tuổi", value: "age" },
+      { text: "Giới tính", value: "gender" },
+      { text: "Khoá học", value: "course" },
+      { text: "Phòng", value: "room" },
+      { text: "Thực Thi", value: "actions", sortable: false }
+    ],
+    desserts: [],
+    editedIndex: -1,
+    editedItem: {
+      name: "",
+      age: 0,
+      gender: "",
+      course: 0,
+      room: ""
+    },
+    defaultItem: {
+      name: "",
+      age: 0,
+      gender: "",
+      course: 0,
+      room: ""
+    }
+  }),
 
-      content: '' +
-      '<h1>This is a heading</h1><br><p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>\n' +
-      '\n' +
-      '<p>Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.</p>\n' +
-      '\n' +
-      '<p>In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus.</p>\n' +
-      '\n' +
-      '<p>Vestibulum purus quam, scelerisque ut, mollis sed, nonummy id, metus. Nullam accumsan lorem in dui. Cras ultricies mi eu turpis hendrerit fringilla. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; In ac dui quis mi consectetuer lacinia. Nam pretium turpis et arcu. Duis arcu tortor, suscipit eget, imperdiet nec, imperdiet iac</p>',
-      editorOption: {
-        // some quill options
-      }
+  computed: {},
 
+  watch: {
+    dialogDelete(val) {
+      val || this.close();
+    },
+    dialogView(val) {
+      val || this.close();
+    },
+    dialogEdit(val) {
+      val || this.close();
+    }
+  },
 
-    }),
+  created() {
+    this.initialize();
+  },
 
-    methods: {
-      handleClick(newTab) {
-        this.currentTab = newTab;
-      },
+  methods: {
+    initialize() {
+      this.desserts = [
+        {
+          name: "Frozen Yogurt",
+          age: 159,
+          gender: "male",
+          course: 12,
+          room: "male"
+        },
+        {
+          name: "Ice cream sandwich",
+          age: 237,
+          gender: "male",
+          course: 12,
+          room: "male"
+        },
+        {
+          name: "Eclair",
+          age: 262,
+          gender: "male",
+          course: 12,
+          room: "male"
+        },
+        {
+          name: "Cupcake",
+          age: 305,
+          gender: "male",
+          course: 12,
+          room: "male"
+        },
+        {
+          name: "Gingerbread",
+          age: 356,
+          gender: "male",
+          course: 11,
+          room: "male"
+        },
+        {
+          name: "Jelly bean",
+          age: 375,
+          gender: "male",
+          course: 113,
+          room: "male"
+        }
+      ];
     },
 
-    computed: {
-      editor() {
-        return this.$refs.myQuillEditor.quill
-      }
+    editItem(item) {
+      this.editedIndex = this.desserts.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialogEdit = true;
     },
+    alertDelete(item) {
+      this.dialogDelete = true;
+      return item;
+    },
+    deleteItem(item) {
+      const index = this.desserts.indexOf(item);
+      this.desserts.splice(index, 1);
+      this.dialogDelete = false;
+    },
+
+    viewItem(item) {
+      this.editedIndex = this.desserts.indexOf(item);
+      this.editedItem = Object.assign({}, item);
+      this.dialogView = true;
+    },
+    close() {
+      this.dialogEdit = false;
+      this.dialogView = false;
+      setTimeout(() => {
+        this.editedItem = Object.assign({}, this.defaultItem);
+        this.editedIndex = -1;
+      }, 300);
+    },
+
+    save() {
+      if (this.editedIndex > -1) {
+        Object.assign(this.desserts[this.editedIndex], this.editedItem);
+      } else {
+        this.desserts.push(this.editedItem);
+      }
+      this.close();
+    }
   }
-  
+};
 </script>
-
-<style lang="css">
-  @import '~quill/dist/quill.core.css';
-  @import '~quill/dist/quill.snow.css';
-  @import '~quill/dist/quill.bubble.css';
-</style>
-
-
