@@ -93,7 +93,7 @@
             <v-btn small color="amber lighten-1" @click="editItem(props.item)">Edit</v-btn>
           </div>
           <div class="my-2">
-            <v-btn small color="red darken-1" @click="alertDelete()">Delete</v-btn>
+            <v-btn small color="red darken-1" @click="deleteItem(props.item)">Delete</v-btn>
           </div>
           <div class="my-2">
             <v-btn small color="blue-grey lighten-4" @click="viewItem(props.item)">Views</v-btn>
@@ -219,12 +219,23 @@ export default {
       this.dialogDelete = true;
       return item;
     },
-    deleteItem(item) {
-      const index = this.desserts.indexOf(item);
-      this.desserts.splice(index, 1);
-      this.dialogDelete = false;
+    async deleteItem(item) {
+      const alert = await this.$swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      });
+      if (alert.value) {
+        const index = this.desserts.indexOf(item);
+        this.desserts.splice(index, 1);
+        this.dialogDelete = false;
+      }
+      return item;
     },
-
     viewItem(item) {
       this.editedIndex = this.desserts.indexOf(item);
       this.editedItem = Object.assign({}, item);
