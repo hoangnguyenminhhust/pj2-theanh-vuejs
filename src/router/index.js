@@ -5,7 +5,10 @@ Vue.use(Router);
 
 export default new Router({
     scrollBehavior() {
-        return window.scrollTo({ top: 0, behavior: 'smooth' });
+        return window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     },
     routes: [
 
@@ -20,17 +23,13 @@ export default new Router({
             name: 'student',
             component: () => import('../views/student/student.vue'),
         },
-        {
-            path: '/request',
-            name: 'request',
-            component: () => import('../views/request/request.vue'),
-        },
+
         {
             path: '/fee',
             name: 'fee',
             component: () => import('../views/fee/fee.vue'),
         },
-        
+
 
     ]
 })

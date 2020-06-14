@@ -54,23 +54,9 @@ export default {
           href: "/student"
         },
         {
-          title: "Quản lí yêu cầu",
+          title: "Quản lý phí",
           icon: "pe-7s-note2",
-          href: "/request"
-        },
-        {
-          title: "Quản lí chi phí",
-          icon: "pe-7s-piggy",
-          child: [
-            {
-              title: "Quản lí phí sinh hoạt",
-              href: "/living-fee"
-            },
-            {
-              title: "Quản lý thống kê phí dư nợ",
-              href: "/loan-fee"
-            }
-          ]
+          href: "/fee"
         }
       ],
       collapsed: true,
