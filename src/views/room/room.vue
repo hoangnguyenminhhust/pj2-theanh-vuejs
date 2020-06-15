@@ -234,7 +234,8 @@ export default {
 
   methods: {
     initialize() {
-      axios.get("/project").then(res => {
+      axios.get("/admin_room").then(res => {
+        console.log(res);
         this.desserts = res.data.data;
       });
     },

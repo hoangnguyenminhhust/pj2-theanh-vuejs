@@ -16,14 +16,14 @@
           <v-card-text>
             <v-container grid-list-md>
               <v-layout wrap>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.id_room" label="Phòng"></v-text-field>
+                <v-col class="d-flex" cols="12" sm="6">
+                  <v-select :items="xItem.room_name" label="Phòng" dense></v-select>
+                </v-col>
+                <v-flex xs12>
+                  <v-text-field v-model="xItem.price_fee" label="Giá Sinh Hoạt"></v-text-field>
                 </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.price_fee" label="Giá Sinh Hoạt"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.date" label="Ngày Hết Hạn"></v-text-field>
+                <v-flex xs12>
+                  <v-text-field v-model="xItem.date" label="Ngày Hết Hạn"></v-text-field>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -45,16 +45,16 @@
             <v-container grid-list-md>
               <v-layout wrap>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.date" label="Ngày hết hạn"></v-text-field>
+                  <v-text-field v-model="xItem.date" label="Ngày hết hạn"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.price_fee" label="Giá phí"></v-text-field>
+                  <v-text-field v-model="xItem.price_fee" label="Giá phí"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.payment_status" label="Trạng thái"></v-text-field>
+                  <v-text-field v-model="xItem.payment_status" label="Trạng thái"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.date_payment" label="Ngày thanh toán"></v-text-field>
+                  <v-text-field v-model="xItem.date_payment" label="Ngày thanh toán"></v-text-field>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -75,19 +75,19 @@
             <v-container grid-list-md>
               <v-layout wrap>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.full_name" label="Sinh viên"></v-text-field>
+                  <v-text-field v-model="xItem.full_name" label="Sinh viên"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.date" label="Ngày hết hạn"></v-text-field>
+                  <v-text-field v-model="xItem.date" label="Ngày hết hạn"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.price_fee" label="Giá Phí"></v-text-field>
+                  <v-text-field v-model="xItem.price_fee" label="Giá Phí"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.payment_status" label="Trạng thái"></v-text-field>
+                  <v-text-field v-model="xItem.payment_status" label="Trạng thái"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.date_payment" label="Ngày thanh toán"></v-text-field>
+                  <v-text-field v-model="xItem.date_payment" label="Ngày thanh toán"></v-text-field>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -163,7 +163,7 @@ export default {
     ],
     desserts: [],
     editedIndex: -1,
-    editedItem: {
+    xItem: {
       name: "",
       age: 0,
       gender: "",
@@ -250,7 +250,7 @@ export default {
 
     editItem(item) {
       this.editedIndex = this.desserts.indexOf(item);
-      this.editedItem = Object.assign({}, item);
+      this.xItem = Object.assign({}, item);
       this.dialogEdit = true;
     },
     async deleteItem(item) {
@@ -272,7 +272,7 @@ export default {
     },
     viewItem(item) {
       this.editedIndex = this.desserts.indexOf(item);
-      this.editedItem = Object.assign({}, item);
+      this.xItem = Object.assign({}, item);
       this.dialogView = true;
     },
     close() {
@@ -281,24 +281,24 @@ export default {
       this.dialogEdit = false;
       this.dialogView = false;
       setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
+        this.xItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
       }, 300);
     },
 
     save() {
       if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem);
+        Object.assign(this.desserts[this.editedIndex], this.xItem);
       } else {
-        this.desserts.push(this.editedItem);
+        this.desserts.push(this.xItem);
       }
       this.close();
     },
     update() {
       if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem);
+        Object.assign(this.desserts[this.editedIndex], this.xItem);
       } else {
-        this.desserts.push(this.editedItem);
+        this.desserts.push(this.xItem);
       }
       this.close();
     }
