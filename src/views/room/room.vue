@@ -57,7 +57,7 @@
             <v-container grid-list-md>
               <v-layout wrap>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="xItem.name_room" label="Mã phòng"></v-text-field>
+                  <v-text-field v-model="xItem.name_room" input="disabled" label="Mã phòng"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
                   <v-text-field v-model="xItem.building" label="Dãy nhà"></v-text-field>
@@ -130,7 +130,20 @@
         </v-card>
       </v-dialog>
     </v-toolbar>
+    <v-toolbar flat color="white">
+      <v-app-bar-nav-icon></v-app-bar-nav-icon>
+      <div>
+        Phòng Còn Trống:
+        <input
+          class="mx-2"
+          type="checkbox"
+          v-model="getRoomFree"
+          v-on-change="getRoomFree"
+        />
+      </div>
+    </v-toolbar>
     <v-data-table :headers="headers" :items="desserts" class="elevation-10">
+      <v-btn small color="light-blue darken-3" @click="save">Lưu</v-btn>
       <template v-slot:items="props">
         <td>{{ props.item.name_room }}</td>
         <td class="text-sm-left">{{ props.item.building }}</td>
@@ -159,6 +172,7 @@
 <script>
 import axios from "../../axios";
 export default {
+  getRoomFree: false,
   data: () => ({
     dialogAdd: false,
     dialogDelete: false,
@@ -211,7 +225,13 @@ export default {
     }
   }),
 
-  computed: {},
+  computed: {
+    getRoomFree: () => {
+      axios.get("/admin_room/check-by-free").then(res => {
+        this.desserts = res.data.data;
+      });
+    }
+  },
 
   watch: {
     dialogAdd(val) {
@@ -235,11 +255,15 @@ export default {
   methods: {
     initialize() {
       axios.get("/admin_room").then(res => {
-        console.log(res);
         this.desserts = res.data.data;
       });
     },
 
+    // getRoomFree() {
+    //   axios.get("/admin_room/check-by-free").then(res => {
+    //     this.desserts = res.data.data;
+    //   });
+    // },
     editItem(item) {
       this.editedIndex = this.desserts.indexOf(item);
       this.xItem = Object.assign({}, item);
@@ -257,7 +281,9 @@ export default {
       });
       if (alert.value) {
         const index = this.desserts.indexOf(item);
-        this.desserts.splice(index, 1);
+        axios.delete(`/admin_room/room/${item.id_room}`).then(() => {
+          this.desserts.splice(index, 1);
+        });
         this.dialogDelete = false;
       }
       return item;
