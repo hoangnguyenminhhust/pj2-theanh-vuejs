@@ -123,7 +123,7 @@
             <p>---------------------------------------------------------------------------------------------------------</p>
             <div class="text--primary">Toà nhà: {{ xItem.building }}</div>
             <div class="text--primary">Mã phòng: {{ xItem.name_room }}</div>
-            <div class="text--primary">Loại phòng: {{ xItem.room_gender }}</div>
+            <div class="text--primary">Loại phòng: {{ xItem.room_gender === 'm' ? 'Nam' : 'Nữ' }}</div>
             <div class="text--primary">Số sinh viên hiện tại: {{ xItem.current_student }}</div>
             <div class="text--primary">Số sinh viên tối đa: {{ xItem.max_student }}</div>
             <div class="text--primary">Trạng thái phòng: {{ xItem.room_status }}</div>
@@ -190,18 +190,22 @@
       <template v-slot:items="props">
         <td>{{ props.item.name_room }}</td>
         <td class="text-sm-left">{{ props.item.building }}</td>
-        <td class="text-sm-left">{{ props.item.room_gender }}</td>
+        <td class="text-sm-left">{{ props.item.room_gender === 'm' ? 'Nam' : 'Nữ' }}</td>
         <td class="text-sm-left">{{ props.item.current_student }}</td>
         <td class="text-sm-left">{{ props.item.max_student }}</td>
         <td class="text-center layout px-0 center">
           <div class="my-2">
-            <v-btn small color="amber lighten-1" @click="editItem(props.item)">Edit</v-btn>
+            <v-btn small color="amber lighten-1" @click="editItem(props.item)">Sửa</v-btn>
           </div>
           <div class="my-2">
-            <v-btn small color="red darken-1" @click="deleteItem(props.item)">Delete</v-btn>
+            <v-btn small color="red darken-1" @click="deleteItem(props.item)">Xóa</v-btn>
           </div>
           <div class="my-2">
-            <v-btn small color="blue-grey lighten-4" @click="viewItem(props.item)">Views</v-btn>
+            <v-btn
+              small
+              color="blue-grey lighten-4"
+              @click="$router.push(`/room/${props.item.id_room}`)"
+            >Chi tiết</v-btn>
           </div>
         </td>
       </template>
@@ -253,7 +257,9 @@ export default {
       {
         text: "Thực Thi",
         value: "actions",
-        sortable: false
+        sortable: false,
+        align: "center",
+        width: 70
       }
     ],
     headers2: [
@@ -365,7 +371,6 @@ export default {
         this.dessertsSv.splice(index, 1);
         this.dialogDelete = false;
       }
-      return item;
     },
     async deleteItem(item) {
       const alert = await this.$swal.fire({

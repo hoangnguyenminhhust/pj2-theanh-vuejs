@@ -19,6 +19,11 @@ export default new Router({
             component: () => import('../views/room/room.vue'),
         },
         {
+            path: '/room/:id',
+            name: 'room-detail',
+            component: () => import('../views/room/room-detail.vue'),
+        },
+        {
             path: '/student',
             name: 'student',
             component: () => import('../views/student/student.vue'),

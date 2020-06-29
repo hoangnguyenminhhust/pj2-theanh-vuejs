@@ -14,10 +14,7 @@
             <v-container grid-list-md>
               <v-layout wrap>
                 <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.name" label="Tên"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.age" label="Tuổi"></v-text-field>
+                  <v-text-field v-model="editedItem.full_name" label="Tên"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 md4>
                   <v-text-field v-model="editedItem.gender" label="Giới tính"></v-text-field>
@@ -102,13 +99,13 @@
       <template v-slot:items="props">
         <td>{{ props.item.full_name }}</td>
         <td class="text-sm-left">{{ props.item.birthday }}</td>
-        <td class="text-sm-left">{{ props.item.sex }}</td>
+        <td class="text-sm-left">{{ props.item.sex === 1? 'Nam' : 'Nữ' }}</td>
         <td class="text-sm-left">{{ props.item.course }}</td>
         <td class="text-sm-left">{{ props.item.status }}</td>
         <td class="text-sm-left">{{ props.item.phone }}</td>
         <td class="text-center layout px-0 center">
           <div class="my-2">
-            <v-btn small color="amber lighten-1" @click="editItem(props.item)">Edit</v-btn>
+            <v-btn small color="amber lighten-1" @click="editStudent(props.item)">Edit</v-btn>
           </div>
           <div class="my-2">
             <v-btn small color="red darken-1" @click="deleteItem(props.item)">Delete</v-btn>
@@ -155,7 +152,7 @@ export default {
       { text: "Trạng thái", value: "status", sortable: false },
 
       { text: "Số điện thoại", value: "phone", sortable: false },
-      { text: "Thực Thi", value: "actions", sortable: false }
+      { text: "Thực Thi", value: "actions", sortable: false, width: 50 }
     ],
     headers2: [
       {
@@ -183,7 +180,8 @@ export default {
       {
         text: "Thực Thi",
         value: "actions",
-        sortable: false
+        sortable: false,
+        width: 50
       }
     ],
     dessertsRoom: [],
@@ -252,7 +250,7 @@ export default {
         this.desserts = res.data.data;
       });
     },
-    editItem(item) {
+    editStudent(item) {
       this.editedIndex = this.desserts.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialogEdit = true;
