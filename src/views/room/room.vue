@@ -422,7 +422,7 @@ export default {
             this.close();
             this.$swal.fire({
               icon: "success",
-              title: "Thêm sinh viên thành công",
+              title: "Sửa thông tin phòng thành công",
               timer: 2000
             });
           });
