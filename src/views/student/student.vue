@@ -33,61 +33,79 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn small color="light-blue darken-1" @click="save">Lưu</v-btn>
+            <v-btn small color="light-blue darken-1" @click="update">Lưu</v-btn>
             <v-btn small color="red darken-1" @click="close">Huỷ Bỏ</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
-      <v-dialog persistent v-model="dialogView" max-width="500px">
+
+      <v-dialog persistent v-model="dialogListRoom" max-width="900px">
         <v-card>
           <v-card-title>
-            <span class="headline">View Item</span>
+            <span class="headline">Danh sách phòng trống</span>
           </v-card-title>
-          <v-card-text>
-            <v-container grid-list-md>
-              <v-layout wrap>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.name" label="Tên"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.age" label="Tuổi"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.gender" label="Giới tính"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.course" label="Khoá học"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.room" label="Phòng"></v-text-field>
-                </v-flex>
-              </v-layout>
-            </v-container>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn small color="red darken-1" @click="close">Cancel</v-btn>
-          </v-card-actions>
+
+          <v-data-table
+            :headers="headers2"
+            :items="dessertsRoom"
+            class="elevation-10"
+            v-model="id_student"
+          >
+            <template v-slot:items="props">
+              <td>{{ props.item.name_room }}</td>
+              <td class="text-sm-left">{{ props.item.building }}</td>
+              <td class="text-sm-left">{{ props.item.room_gender }}</td>
+              <td class="text-sm-left">{{ props.item.current_student }}</td>
+              <td class="text-sm-left">{{ props.item.max_student }}</td>
+              <td class="text-center layout px-0 center">
+                <div class="my-2">
+                  <v-btn
+                    small
+                    color="blue-grey lighten-4"
+                    @click="addStudent(props.item.id_room, id_student)"
+                  >Thêm vào</v-btn>
+                </div>
+              </td>
+            </template>
+          </v-data-table>
         </v-card>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn small color="red darken-1" @click="close">Huỷ Bỏ</v-btn>
+        </v-card-actions>
       </v-dialog>
-      <v-dialog persistent v-model="dialogDelete" max-width="290">
-        <v-card>
-          <v-card-title class="headline">Bạn có muốn xoá sinh viên này?</v-card-title>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="light-blue darken-1" text @click="deleteItem(item)">Xác Nhận</v-btn>
-            <v-btn color="red darken-1" text @click="dialogDelete = false">Huỷ bỏ</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+    </v-toolbar>
+    <v-toolbar flat color="white">
+      <v-app-bar-nav-icon></v-app-bar-nav-icon>
+      <div>
+        Sinh viên đang chờ duyệt phòng:
+        <input
+          class="mx-2"
+          type="checkbox"
+          v-model="getStudentFree"
+          @change="getStudentFree2(getStudentFree)"
+        />
+      </div>
+      <v-spacer></v-spacer>
+      <v-text-field
+        class="mx-2"
+        flat
+        hide-details
+        label="Search"
+        prepend-inner-icon="search"
+        v-model="search.text"
+        @change="search()"
+      ></v-text-field>
     </v-toolbar>
     <v-data-table :headers="headers" :items="desserts" class="elevation-10">
       <template v-slot:items="props">
-        <td>{{ props.item.name }}</td>
-        <td class="text-sm-left">{{ props.item.age }}</td>
-        <td class="text-sm-left">{{ props.item.gender }}</td>
+        <td>{{ props.item.full_name }}</td>
+        <td class="text-sm-left">{{ props.item.birthday }}</td>
+        <td class="text-sm-left">{{ props.item.sex }}</td>
         <td class="text-sm-left">{{ props.item.course }}</td>
-        <td class="text-sm-left">{{ props.item.room }}</td>
+        <td class="text-sm-left">{{ props.item.status }}</td>
+        <td class="text-sm-left">{{ props.item.phone }}</td>
         <td class="text-center layout px-0 center">
           <div class="my-2">
             <v-btn small color="amber lighten-1" @click="editItem(props.item)">Edit</v-btn>
@@ -95,37 +113,80 @@
           <div class="my-2">
             <v-btn small color="red darken-1" @click="deleteItem(props.item)">Delete</v-btn>
           </div>
-          <div class="my-2">
-            <v-btn small color="blue-grey lighten-4" @click="viewItem(props.item)">Views</v-btn>
+          <div v-if="status = 0" class="my-2">
+            <v-btn small color="blue-grey lighten-4">Room</v-btn>
+          </div>
+          <div v-else class="my-2">
+            <v-btn
+              small
+              color="blue-grey lighten-4"
+              disabled="true"
+              @click="addRoom(props.item.id_student)"
+            >Room</v-btn>
           </div>
         </td>
       </template>
       <template v-slot:no-data>
-        <v-btn small color="amber lighten-1" @click="initialize">Tải lại danh sách</v-btn>
+        <v-btn small color="blue-grey lighten-4" @click="initialize">Tải lại danh sách</v-btn>
       </template>
     </v-data-table>
   </div>
 </template>
 
 <script>
+import axios from "../../axios";
 export default {
   data: () => ({
+    id_student: 0,
+    getStudentFree: false,
+    dialogListRoom: false,
     dialogDelete: false,
-    dialogView: false,
     dialogEdit: false,
     headers: [
       {
         text: "Tên",
         width: "20%",
         sortable: false,
-        value: "name"
+        value: "full_name"
       },
-      { text: "Tuổi", value: "age" },
-      { text: "Giới tính", value: "gender" },
+      { text: "Ngày sinh", value: "birthday" },
+      { text: "Giới tính", value: "sex" },
       { text: "Khoá học", value: "course" },
-      { text: "Phòng", value: "room" },
+      { text: "Trạng thái", value: "status", sortable: false },
+
+      { text: "Số điện thoại", value: "phone", sortable: false },
       { text: "Thực Thi", value: "actions", sortable: false }
     ],
+    headers2: [
+      {
+        text: "Mã phòng",
+        width: "20%",
+        sortable: false,
+        value: "name_room"
+      },
+      {
+        text: "Dãy nhà",
+        value: "building"
+      },
+      {
+        text: "Loại phòng",
+        value: "room_gender"
+      },
+      {
+        text: "Số người",
+        value: "current_student"
+      },
+      {
+        text: "Tối đa",
+        value: "max_student"
+      },
+      {
+        text: "Thực Thi",
+        value: "actions",
+        sortable: false
+      }
+    ],
+    dessertsRoom: [],
     desserts: [],
     editedIndex: -1,
     editedItem: {
@@ -150,10 +211,11 @@ export default {
     dialogDelete(val) {
       val || this.close();
     },
-    dialogView(val) {
+
+    dialogEdit(val) {
       val || this.close();
     },
-    dialogEdit(val) {
+    dialogListRoom(val) {
       val || this.close();
     }
   },
@@ -163,53 +225,33 @@ export default {
   },
 
   methods: {
-    initialize() {
-      this.desserts = [
-        {
-          name: "Frozen Yogurt",
-          age: 159,
-          gender: "male",
-          course: 12,
-          room: "male"
-        },
-        {
-          name: "Ice cream sandwich",
-          age: 237,
-          gender: "male",
-          course: 12,
-          room: "male"
-        },
-        {
-          name: "Eclair",
-          age: 262,
-          gender: "male",
-          course: 12,
-          room: "male"
-        },
-        {
-          name: "Cupcake",
-          age: 305,
-          gender: "male",
-          course: 12,
-          room: "male"
-        },
-        {
-          name: "Gingerbread",
-          age: 356,
-          gender: "male",
-          course: 11,
-          room: "male"
-        },
-        {
-          name: "Jelly bean",
-          age: 375,
-          gender: "male",
-          course: 113,
-          room: "male"
-        }
-      ];
+    initializeRoom() {
+      axios.get("/admin_room/check-by-free").then(res => {
+        this.dessertsRoom = res.data.data;
+      });
     },
-
+    initialize() {
+      axios.get("/admin_student").then(res => {
+        this.desserts = res.data.data;
+      });
+    },
+    addRoom(id_students) {
+      this.initializeRoom();
+      this.id_student = id_students;
+      this.dialogListRoom = true;
+    },
+    addStudent(id_room, id_student) {
+      axios
+        .get(`admin_student/add-student/${id_room}/${id_student}`)
+        .then(() => {
+          alert("Thành công");
+        });
+    },
+    search() {
+      axios.post(`admin_student/find-student/${this.search.text}`).then(res => {
+        this.desserts = res.data.data;
+      });
+    },
     editItem(item) {
       this.editedIndex = this.desserts.indexOf(item);
       this.editedItem = Object.assign({}, item);
@@ -231,25 +273,45 @@ export default {
       });
       if (alert.value) {
         const index = this.desserts.indexOf(item);
-        this.desserts.splice(index, 1);
+        axios.delete(`/admin_student/${item.id_student}`).then(() => {
+          this.desserts.splice(index, 1);
+        });
+
         this.dialogDelete = false;
       }
       return item;
     },
-    viewItem(item) {
-      this.editedIndex = this.desserts.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialogView = true;
-    },
+
     close() {
       this.dialogEdit = false;
-      this.dialogView = false;
+      this.dialogListRoom = false;
       setTimeout(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
       }, 300);
     },
 
+    getStudentFree2(status) {
+      if (status === true) {
+        axios.get("/admin_student/free").then(res => {
+          this.desserts = res.data.data;
+        });
+      }
+      if (status === false) {
+        this.initialize();
+      }
+    },
+    update() {
+      if (this.editedIndex > -1) {
+        Object.assign(this.desserts[this.editedIndex], this.xItem);
+      } else {
+        this.desserts.push(this.xItem);
+        axios
+          .put(`/admin_room/${this.xItem.id_room}`, this.xItem)
+          .then(() => {});
+      }
+      this.close();
+    },
     save() {
       if (this.editedIndex > -1) {
         Object.assign(this.desserts[this.editedIndex], this.editedItem);
