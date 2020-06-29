@@ -50,7 +50,7 @@
       <v-dialog persistent v-model="dialogEdit" max-width="400px">
         <v-card>
           <v-card-title>
-            <span class="headline">Edit Item</span>
+            <span class="headline">Sửa thông tin phòng</span>
           </v-card-title>
 
           <v-card-text>
@@ -88,7 +88,7 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-      <v-dialog persistent v-model="dialogListStudent" max-width="900px">
+      <!-- <v-dialog persistent v-model="dialogListStudent" max-width="900px">
         <v-card>
           <v-card-title>
             <span class="headline">Danh sách SV</span>
@@ -115,7 +115,7 @@
             <v-btn small color="red darken-1" @click="close">Huỷ Bỏ</v-btn>
           </v-card-actions>
         </v-card>
-      </v-dialog>
+      </v-dialog>-->
       <v-dialog persistent v-model="dialogView" max-width="500px">
         <v-card class="mx-auto" max-width="500">
           <v-card-text>
@@ -136,16 +136,14 @@
             <v-btn
               small
               color="blue-grey lighten-4"
-              v-on="on"
               @click="viewListStudent(xItem)"
             >Xem Danh sách sinh viên</v-btn>
-            <v-btn small color="red darken-1" v-on="on" @click="close">Cancel</v-btn>
+            <v-btn small color="red darken-1" @click="close">Cancel</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
     </v-toolbar>
     <v-toolbar flat color="white">
-      <v-app-bar-nav-icon></v-app-bar-nav-icon>
       <div>
         Phòng Còn Trống:
         <input
@@ -166,7 +164,6 @@
       </div>
     </v-toolbar>
     <v-toolbar flat color="white">
-      <v-app-bar-nav-icon></v-app-bar-nav-icon>
       <v-select
         v-model="selectionTypeBuilding"
         :items="listBuildings"
@@ -418,15 +415,20 @@ export default {
       this.close();
     },
     update() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.xItem);
-      } else {
-        this.desserts.push(this.xItem);
+      try {
         axios
-          .put(`/admin_room/${this.xItem.id_room}`, this.xItem)
-          .then(() => {});
+          .put(`/admin_room/room/${this.xItem.id_room}`, this.xItem)
+          .then(() => {
+            this.close();
+            this.$swal.fire({
+              icon: "success",
+              title: "Thêm sinh viên thành công",
+              timer: 2000
+            });
+          });
+      } catch (error) {
+        alert(error);
       }
-      this.close();
     },
     getRoomFree2(status) {
       if (status === true) {

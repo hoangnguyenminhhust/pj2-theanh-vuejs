@@ -84,7 +84,7 @@
 </template>
 
 <script>
-    //import VuePerfectScrollbar from 'vue-perfect-scrollbar'
+    import VuePerfectScrollbar from 'vue-perfect-scrollbar'
     //import VueCircle from 'vue2-circle-progress'
     //import Trend from 'vuetrend';
 
@@ -118,7 +118,7 @@
 
     export default {
         components: {
-            //VuePerfectScrollbar,
+            VuePerfectScrollbar,
             //'font-awesome-icon': FontAwesomeIcon,
             //VueCircle,
             //'trend': Trend,

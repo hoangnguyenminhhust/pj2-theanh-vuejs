@@ -4,26 +4,25 @@
       <v-toolbar-title>Quản lý sinh viên</v-toolbar-title>
       <v-divider class="mx-2"></v-divider>
       <v-spacer></v-spacer>
-      <v-dialog persistent v-model="dialogEdit" max-width="500px">
+      <v-dialog persistent v-model="dialogEdit" max-width="600px">
         <v-card>
           <v-card-title>
-            <span class="headline">Edit Item</span>
+            <span class="headline">Sửa thông tin sinh viên</span>
           </v-card-title>
 
           <v-card-text>
             <v-container grid-list-md>
               <v-layout wrap>
-                <v-flex xs12 sm6 md4>
+                <v-flex xs12 md6>
                   <v-text-field v-model="editedItem.full_name" label="Tên"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.gender" label="Giới tính"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
+                  <v-text-field v-model="editedItem.sex" label="Giới tính"></v-text-field>
                   <v-text-field v-model="editedItem.course" label="Khoá học"></v-text-field>
+                  <v-text-field v-model="editedItem.phone" label="Số điện thoại"></v-text-field>
                 </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field v-model="editedItem.room" label="Phòng"></v-text-field>
+                <v-flex xs12 md6>
+                  <v-text-field v-model="editedItem.email" label="Email"></v-text-field>
+                  <v-text-field v-model="editedItem.cmnd_number" label="Số chứng minh"></v-text-field>
+                  <v-text-field v-model="editedItem.birthday" label="Ngày sinh"></v-text-field>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -46,7 +45,6 @@
             :headers="headers2"
             :items="dessertsRoom"
             class="elevation-10"
-            v-model="id_student"
           >
             <template v-slot:items="props">
               <td>{{ props.item.name_room }}</td>
@@ -59,7 +57,7 @@
                   <v-btn
                     small
                     color="blue-grey lighten-4"
-                    @click="addStudent(props.item.id_room, id_student)"
+                    @click="addStudent(props.item.id_room)"
                   >Thêm vào</v-btn>
                 </div>
               </td>
@@ -74,7 +72,6 @@
       </v-dialog>
     </v-toolbar>
     <v-toolbar flat color="white">
-      <v-app-bar-nav-icon></v-app-bar-nav-icon>
       <div>
         Sinh viên đang chờ duyệt phòng:
         <input
@@ -105,21 +102,18 @@
         <td class="text-sm-left">{{ props.item.phone }}</td>
         <td class="text-center layout px-0 center">
           <div class="my-2">
-            <v-btn small color="amber lighten-1" @click="editStudent(props.item)">Edit</v-btn>
+            <v-btn small color="amber lighten-1" @click="editStudent(props.item)">Sửa</v-btn>
           </div>
           <div class="my-2">
-            <v-btn small color="red darken-1" @click="deleteItem(props.item)">Delete</v-btn>
+            <v-btn small color="red darken-1" @click="deleteItem(props.item)">Xóa</v-btn>
           </div>
-          <div v-if="status = 0" class="my-2">
-            <v-btn small color="blue-grey lighten-4">Room</v-btn>
-          </div>
-          <div v-else class="my-2">
+          <div class="my-2">
             <v-btn
               small
+              :disabled="props.item.status === 1 ? true : false"
               color="blue-grey lighten-4"
-              disabled="true"
               @click="addRoom(props.item.id_student)"
-            >Room</v-btn>
+            >Phòng</v-btn>
           </div>
         </td>
       </template>
@@ -132,6 +126,7 @@
 
 <script>
 import axios from "../../axios";
+
 export default {
   data: () => ({
     id_student: 0,
@@ -233,17 +228,20 @@ export default {
         this.desserts = res.data.data;
       });
     },
-    addRoom(id_students) {
+
+    addRoom(id_student) {
       this.initializeRoom();
-      this.id_student = id_students;
+      this.id_student = id_student;
       this.dialogListRoom = true;
     },
-    addStudent(id_room, id_student) {
+    addStudent(id_room) {
       axios
-        .get(`admin_student/add-student/${id_room}/${id_student}`)
-        .then(() => {
+        .get(`admin_student/add-student/${id_room}/${this.id_student}`)
+        .then(async () => {
           alert("Thành công");
+          await this.initialize();
         });
+      
     },
     search() {
       axios.post(`admin_student/find-student/${this.search.text}`).then(res => {
@@ -299,16 +297,19 @@ export default {
         this.initialize();
       }
     },
-    update() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.xItem);
-      } else {
-        this.desserts.push(this.xItem);
-        axios
-          .put(`/admin_room/${this.xItem.id_room}`, this.xItem)
-          .then(() => {});
-      }
-      this.close();
+    async update() {
+       try {
+          await axios.put(`/admin_student/${this.editedItem.id_student}`, this.editedItem);
+          await this.initialize();
+          this.close();
+          this.$swal.fire({
+            icon: "success",
+            title: "Cập nhật thành công",
+            timer: 2000
+          });
+        } catch (error) {
+          alert(error);
+        }
     },
     save() {
       if (this.editedIndex > -1) {
