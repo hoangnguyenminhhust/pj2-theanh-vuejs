@@ -51,7 +51,6 @@ export default new Router({
             path: '/homepage',
             name: 'homepage',
             meta: { layout: 'userpages' },
-            beforeEnter: authGuard,
             component: () => import('../views/homepage/homepage.vue'),
         },
         {
