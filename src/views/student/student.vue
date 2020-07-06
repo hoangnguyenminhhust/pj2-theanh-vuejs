@@ -41,11 +41,7 @@
             <span class="headline">Danh sách phòng trống</span>
           </v-card-title>
 
-          <v-data-table
-            :headers="headers2"
-            :items="dessertsRoom"
-            class="elevation-10"
-          >
+          <v-data-table :headers="headers2" :items="dessertsRoom" class="elevation-10">
             <template v-slot:items="props">
               <td>{{ props.item.name_room }}</td>
               <td class="text-sm-left">{{ props.item.building }}</td>
@@ -144,7 +140,7 @@ export default {
       { text: "Ngày sinh", value: "birthday" },
       { text: "Giới tính", value: "sex" },
       { text: "Khoá học", value: "course" },
-      { text: "Trạng thái", value: "status", sortable: false },
+      { text: "Trạng thái", value: "status", sortable: true },
 
       { text: "Số điện thoại", value: "phone", sortable: false },
       { text: "Thực Thi", value: "actions", sortable: false, width: 50 }
@@ -241,7 +237,6 @@ export default {
           alert("Thành công");
           await this.initialize();
         });
-      
     },
     search() {
       axios.post(`admin_student/find-student/${this.search.text}`).then(res => {
@@ -298,18 +293,21 @@ export default {
       }
     },
     async update() {
-       try {
-          await axios.put(`/admin_student/${this.editedItem.id_student}`, this.editedItem);
-          await this.initialize();
-          this.close();
-          this.$swal.fire({
-            icon: "success",
-            title: "Cập nhật thành công",
-            timer: 2000
-          });
-        } catch (error) {
-          alert(error);
-        }
+      try {
+        await axios.put(
+          `/admin_student/${this.editedItem.id_student}`,
+          this.editedItem
+        );
+        await this.initialize();
+        this.close();
+        this.$swal.fire({
+          icon: "success",
+          title: "Cập nhật thành công",
+          timer: 2000
+        });
+      } catch (error) {
+        alert(error);
+      }
     },
     save() {
       if (this.editedIndex > -1) {

@@ -23,7 +23,10 @@
                   <v-text-field v-model="xItem.price_fee" label="Giá Sinh Hoạt"></v-text-field>
                 </v-flex>
                 <v-flex xs12>
-                  <v-text-field v-model="xItem.date" label="Ngày Hết Hạn"></v-text-field>
+                  <v-text-field v-model="xItem.start" label="Ngày bắt đầu"></v-text-field>
+                </v-flex>
+                <v-flex xs12>
+                  <v-text-field v-model="xItem.end" label="Ngày kết thúc"></v-text-field>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -114,7 +117,7 @@
             <v-btn small color="red darken-1" @click="deleteItem(props.item)">Delete</v-btn>
           </div>
           <div class="my-2">
-            <v-btn small color="blue-grey lighten-4" @click="viewItem(props.item)">Views</v-btn>
+            <v-btn small color="blue-grey lighten-4" @click="confirm(props.item)">Confirm</v-btn>
           </div>
         </td>
       </template>
@@ -126,6 +129,8 @@
 </template>
 
 <script>
+import axios from "../../axios";
+
 export default {
   data: () => ({
     dialogAdd: false,
@@ -202,50 +207,9 @@ export default {
 
   methods: {
     initialize() {
-      this.desserts = [
-        {
-          name: "Frozen Yogurt",
-          age: 159,
-          gender: "male",
-          course: 12,
-          room: "male"
-        },
-        {
-          name: "Ice cream sandwich",
-          age: 237,
-          gender: "male",
-          course: 12,
-          room: "male"
-        },
-        {
-          name: "Eclair",
-          age: 262,
-          gender: "male",
-          course: 12,
-          room: "male"
-        },
-        {
-          name: "Cupcake",
-          age: 305,
-          gender: "male",
-          course: 12,
-          room: "male"
-        },
-        {
-          name: "Gingerbread",
-          age: 356,
-          gender: "male",
-          course: 11,
-          room: "male"
-        },
-        {
-          name: "Jelly bean",
-          age: 375,
-          gender: "male",
-          course: 113,
-          room: "male"
-        }
-      ];
+      axios.get("/admin_fee").then(res => {
+        this.desserts = res.data.data;
+      });
     },
 
     editItem(item) {
@@ -265,7 +229,10 @@ export default {
       });
       if (alert.value) {
         const index = this.desserts.indexOf(item);
-        this.desserts.splice(index, 1);
+        axios.delete(`/admin_fee/${item.id_fee}`).then(() => {
+          this.desserts.splice(index, 1);
+        });
+
         this.dialogDelete = false;
       }
       return item;
@@ -285,7 +252,26 @@ export default {
         this.editedIndex = -1;
       }, 300);
     },
+    async confirm(item) {
+      try {
+        await axios
+          .put(`/admin_fee/confirm_fee/${item.id_fee}`)
+          .then(this.initialize());
 
+        await this.initialize();
+        this.close();
+        this.$swal.fire({
+          icon: "success",
+          title: "Cập nhật thành công",
+          timer: 2000
+        });
+      } catch (error) {
+        alert(error);
+      }
+      axios.put(`/admin_fee/confirm_fee/${item.id_fee}`).then(res => {
+        this.desserts = res.data.data;
+      });
+    },
     save() {
       if (this.editedIndex > -1) {
         Object.assign(this.desserts[this.editedIndex], this.xItem);
@@ -294,13 +280,22 @@ export default {
       }
       this.close();
     },
-    update() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.xItem);
-      } else {
-        this.desserts.push(this.xItem);
+    async update() {
+      try {
+        await axios.put(
+          `/admin_fee/${this.editedItem.id_fee}`,
+          this.editedItem
+        );
+        await this.initialize();
+        this.close();
+        this.$swal.fire({
+          icon: "success",
+          title: "Cập nhật thành công",
+          timer: 2000
+        });
+      } catch (error) {
+        alert(error);
       }
-      this.close();
     }
   }
 };
