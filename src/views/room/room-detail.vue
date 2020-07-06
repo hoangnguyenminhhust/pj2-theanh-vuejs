@@ -10,14 +10,40 @@
             <div class="header" style="font-size: 18px;">Thông tin phòng</div>
           </b-card-header>
           <b-card-body>
-            <div class="text--primary"><strong>Toà nhà:</strong> {{ roomInfo.building }}</div>
-            <div class="text--primary"><strong>Mã phòng:</strong> {{ roomInfo.name_room }}</div>
-            <div class="text--primary"><strong>Loại phòng:</strong> {{ roomInfo.room_gender === 'm' ? 'Nam' : 'Nữ' }}</div>
-            <div class="text--primary"><strong>Số sinh viên hiện tại:</strong> {{ roomInfo.current_student }}</div>
-            <div class="text--primary"><strong>Số sinh viên tối đa:</strong> {{ roomInfo.max_student }}</div>
-            <div class="text--primary"><strong>Trạng thái phòng:</strong><span style="color: green"> {{ roomInfo.room_status === 1 ? 'Đang hoạt động' : 'Chưa hoạt động' }}</span></div>
-            <div class="text--primary"><strong>Giá phòng:</strong> {{ roomInfo.room_price }}</div>
-            <div class="text--primary"><strong>Diện tích phòng:</strong> {{ roomInfo.room_size }}</div>
+            <div class="text--primary">
+              <strong>Toà nhà:</strong>
+              {{ roomInfo.building }}
+            </div>
+            <div class="text--primary">
+              <strong>Mã phòng:</strong>
+              {{ roomInfo.name_room }}
+            </div>
+            <div class="text--primary">
+              <strong>Loại phòng:</strong>
+              {{ roomInfo.room_gender === 'm' ? 'Nam' : 'Nữ' }}
+            </div>
+            <div class="text--primary">
+              <strong>Số sinh viên hiện tại:</strong>
+              {{ roomInfo.current_student }}
+            </div>
+            <div class="text--primary">
+              <strong>Số sinh viên tối đa:</strong>
+              {{ roomInfo.max_student }}
+            </div>
+            <div class="text--primary">
+              <strong>Trạng thái phòng:</strong>
+              <span
+                style="color: green"
+              >{{ roomInfo.room_status === 1 ? 'Đang hoạt động' : 'Chưa hoạt động' }}</span>
+            </div>
+            <div class="text--primary">
+              <strong>Giá phòng:</strong>
+              {{ roomInfo.room_price }}
+            </div>
+            <div class="text--primary">
+              <strong>Diện tích phòng:</strong>
+              {{ roomInfo.room_size }}
+            </div>
           </b-card-body>
         </b-card>
       </b-col>
@@ -38,11 +64,7 @@
                 <td class="text-sm-left">{{ props.item.course }}</td>
                 <td class="text-center layout px-0 center">
                   <div class="my-2">
-                    <v-btn
-                      small
-                      color="error"
-                      @click="deleteStudentOutRoom(props.item)"
-                    >Xóa</v-btn>
+                    <v-btn small color="error" @click="deleteStudentOutRoom(props.item)">Xóa</v-btn>
                   </div>
                 </td>
               </template>
@@ -79,7 +101,7 @@
 
 <script>
 import axios from "../../axios";
-import moment from 'moment';
+import moment from "moment";
 
 export default {
   data: () => ({
@@ -96,7 +118,7 @@ export default {
       },
       {
         text: "CMND",
-        value: "cmnd_number",
+        value: "cmnd_number"
       },
       {
         text: "Ngày sinh",
@@ -105,7 +127,7 @@ export default {
       },
       {
         text: "Khoá học",
-        value: "course",
+        value: "course"
       },
       {
         text: "Thực Thi",
@@ -144,9 +166,13 @@ export default {
         cancelButtonColor: "#d33",
         confirmButtonText: "Yes, delete it!"
       });
+
       if (alert.value) {
-        const index = this.dessertsSv.indexOf(item);
-        this.dessertsSv.splice(index, 1);
+        const index = this.existStudents.indexOf(item);
+        axios.get(`/admin_student/kick/${item.id_student}`).then(() => {
+          this.existStudents.splice(index, 1);
+        });
+
         this.dialogDelete = false;
       }
     },

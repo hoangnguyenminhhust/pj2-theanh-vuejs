@@ -94,7 +94,7 @@
         <td class="text-sm-left">{{ props.item.birthday }}</td>
         <td class="text-sm-left">{{ props.item.sex === 1? 'Nam' : 'Nữ' }}</td>
         <td class="text-sm-left">{{ props.item.course }}</td>
-        <td class="text-sm-left">{{ props.item.status }}</td>
+        <td class="text-sm-left">{{ props.item.status === 0? 'OutRoom' : 'InRoom'}}</td>
         <td class="text-sm-left">{{ props.item.phone }}</td>
         <td class="text-center layout px-0 center">
           <div class="my-2">
@@ -292,19 +292,18 @@ export default {
         this.initialize();
       }
     },
-    async update() {
+    update() {
       try {
-        await axios.put(
-          `/admin_student/${this.editedItem.id_student}`,
-          this.editedItem
-        );
-        await this.initialize();
-        this.close();
-        this.$swal.fire({
-          icon: "success",
-          title: "Cập nhật thành công",
-          timer: 2000
-        });
+        axios
+          .put(`/admin_student/${this.editedItem.id_student}`, this.xItem)
+          .then(() => {
+            this.close();
+            this.$swal.fire({
+              icon: "success",
+              title: "Sửa thông tin phòng thành công",
+              timer: 2000
+            });
+          });
       } catch (error) {
         alert(error);
       }
