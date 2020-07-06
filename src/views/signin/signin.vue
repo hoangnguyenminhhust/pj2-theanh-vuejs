@@ -71,7 +71,7 @@ export default {
         }
         const res = await axios.post("/student_student/login", this.signIn);
         localStorage.setItem('token', res.data.data.token);
-        this.$router.push({ path: `/studentInfo/${res.data.data['0'].id_student}` });
+        this.$router.push({ path: '/studentInfo' });
       } catch (error) {
         alert("Sai tài khoản hoặc mật khẩu");
       }

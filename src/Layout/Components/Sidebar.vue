@@ -22,7 +22,7 @@
     </div>
     <div class="app-sidebar-content">
       <VuePerfectScrollbar class="app-sidebar-scroll" v-once>
-        <sidebar-menu showOneChild :menu="menu" />
+        <sidebar-menu showOneChild :menu="token === 'hoangnm' ? menu: menu2" />
       </VuePerfectScrollbar>
     </div>
   </div>
@@ -59,10 +59,23 @@ export default {
           href: "/fee"
         }
       ],
+
+      menu2: [
+        {
+          title: "Sinh Viên",
+          icon: "pe-7s-id",
+          href: "/studentInfo"
+        },
+      ],
       collapsed: true,
 
       windowWidth: 0
     };
+  },
+  computed: {
+    token: function() {
+      return localStorage.getItem('token');
+    }
   },
   props: {
     sidebarbg: String
