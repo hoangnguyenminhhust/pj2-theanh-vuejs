@@ -119,6 +119,9 @@
           <div class="my-2">
             <v-btn small color="blue-grey lighten-4" @click="confirm(props.item)">Confirm</v-btn>
           </div>
+          <div class="my-2">
+            <v-btn small color="blue-grey lighten-4" @click="history(props.item)">History</v-btn>
+          </div>
         </td>
       </template>
       <template v-slot:no-data>
@@ -211,7 +214,9 @@ export default {
         this.desserts = res.data.data;
       });
     },
-
+    async history(item) {
+      axios.delete(`/admin_fee/history/${item.id_student}`).then(() => {});
+    },
     editItem(item) {
       this.editedIndex = this.desserts.indexOf(item);
       this.xItem = Object.assign({}, item);
