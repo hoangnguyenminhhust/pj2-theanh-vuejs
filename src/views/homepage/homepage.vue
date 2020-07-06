@@ -9,10 +9,10 @@
           </a>
         </div>
         <div class="login-button">
-          <a href="/signup_student">
+          <a href="/signup">
             <button class="f-heading">Sign up</button>
           </a>
-          <a href="/login_student">
+          <a href="/signin">
             <button class="f-heading">Sign in</button>
           </a>
         </div>
@@ -89,8 +89,26 @@
       <p>Địa chỉ: Số 1 Đại Cồ Việt - Hà Nội</p>
       <p>Address: NO.1 Dai Co Viet street - Ha Noi</p>
     </footer>
+    <div class="modals">
+      <b-modal id="sign-up" title="Đăng kí">
+        <p class="my-4"></p>
+      </b-modal>
+    </div>
   </div>
 </template>
+
+<script>
+
+export default {
+  data: () => ({
+    signUp: {},
+    signIn: {}
+  }),
+  methods: {
+
+  }
+};
+</script>
 
 
 <style>

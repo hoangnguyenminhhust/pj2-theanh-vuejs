@@ -10,6 +10,7 @@ export default new Router({
             behavior: 'smooth'
         });
     },
+    mode: 'history',
     routes: [
 
         // Dashboards
@@ -39,6 +40,24 @@ export default new Router({
             name: 'homepage',
             meta: { layout: 'userpages' },
             component: () => import('../views/homepage/homepage.vue'),
+        },
+        {
+            path: '/signup',
+            name: 'signup',
+            meta: { layout: 'userpages' },
+            component: () => import('../views/signup/signup.vue'),
+        },
+        {
+            path: '/signin',
+            name: 'signin',
+            meta: { layout: 'userpages' },
+            component: () => import('../views/signin/signin.vue'),
+        },
+        {
+            path: '/studentInfo/:studentId',
+            name: 'Student Info',
+            meta: { layout: 'userpages' },
+            component: () => import('../views/studentInfo/studentInfo.vue'),
         },
         
     ]
