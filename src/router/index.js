@@ -30,7 +30,12 @@ export default new Router({
             name: 'chiphi',
             component: () => import('../views/chiphi/chiphi.vue'),
         },
+        {
+            path: '/homepage',
+            name: 'homepage',
+            meta: { layout: 'userpages' },
+            component: () => import('../views/homepage/homepage.vue'),
+        },
         
-
     ]
 })
